@@ -5,6 +5,9 @@ import { collection, onSnapshot, addDoc, doc, deleteDoc} from 'firebase/firestor
 const Formulario = () => {
     const [fruta, setFruta] = useState('');
     const [description, setDescription] = useState('');
+    const [cantidad, setCantidad] = useState('');
+    const [precio, setPrecio] = useState('');
+    const [estado, setEstado] = useState('');
     const [listaFrutas, setListaFrutas] = useState([])
 
 
@@ -23,6 +26,10 @@ const Formulario = () => {
       }, []);
 
     const guardarFrutas = async (e) =>{
+        if (fruta === "" || description === "" || cantidad === "" || precio === "" || estado  === "") {
+            alert("llenar todos los campos")
+            return
+        }
         e.preventDefault()
         try{
        
@@ -30,16 +37,23 @@ const Formulario = () => {
             const data = await addDoc(collection(db,'frutas'),{
                 
                 nombreFruta: fruta,
-                nombreDescripcion: description
+                description: description,
+                cantidadProducto: cantidad,
+                precio:precio,
+                estado: estado
+
             })
 
             setListaFrutas([
                 ...listaFrutas,
-                {nombreFruta:fruta, nombreDescripcion:description, id:data.id}
+                {nombreFruta:fruta, description:description, cantidadProducto:cantidad, precio:precio, estado:estado ,id:data.id}
             ])
 
             setFruta('')
             setDescription('')
+            setCantidad('')
+            setPrecio('')
+            setEstado('')
             e.target.reset()
         }catch(error){
             console.log(error)
@@ -62,22 +76,37 @@ const Formulario = () => {
         <div className='row'>
             <div className='col-8'>
                 <h4 className='text-center'>Listado de Frutas</h4>
-                <ul className="list-grup">
+                <div className="container">
+                    <div className="row">
                 {
                         listaFrutas.map(item =>(
-                            <li className='list-group-item' key={item.id}>
-                                <span className='lead'>{item.nombreFruta}-{item.nombreDescripcion}</span>
-                                <button className='btn btn-danger btn-sm float-end mx-2' onClick={()=>eliminar(item.id)}>Eliminar</button>
-                            </li>
+                           
+                                <div className="card col-5 m-2 " key={item.id}>
+                                <div className="card-body" >
+                                    <h2 className="card-title">{item.nombreFruta}</h2>
+                                    <h4 className="card-text">{item.cantidadProducto}</h4>
+                                    <p>{item.description}</p>
+                                    <h5>{item.precio}</h5>
+                                    <p>{item.estado}</p>
+                                    
+                                    <button className='btn btn-danger btn-sm float-center px-5' onClick={()=>eliminar(item.id)}>Eliminar</button>
+                                </div>
+                                </div>
+                                
+                           
                         ))
                     }
-                </ul>
+                    </div>
+                </div>
             </div>
             <div className='col-4'>
                 <h4 className="tex-center">Agregar Frutas</h4>
                 <form onSubmit={guardarFrutas}>
                     <input type="text" placeholder='Ingrese Fruta' value={fruta} onChange={(e)=>setFruta(e.target.value)} className='form-control mb-2'/>
                     <input type="text" placeholder='Ingrese Description' value={description} onChange={(e)=>setDescription(e.target.value)} className='form-control mb-2'/>
+                    <input type="text" placeholder='Ingrese Cantidad' value={cantidad} onChange={(e)=>setCantidad(e.target.value)} className='form-control mb-2'/>
+                    <input type="text" placeholder='Ingrese Precio' value={precio} onChange={(e)=>setPrecio(e.target.value)} className='form-control mb-2'/>
+                    <input type="text" placeholder='Como es el estado de su fruta?' value={estado} onChange={(e)=>setEstado(e.target.value)} className='form-control mb-2'/>
                     <button className='btn btn-primary btn-block' type='submit '>Agregar</button>
                 </form>   
             </div>
