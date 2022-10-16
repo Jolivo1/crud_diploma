@@ -15,8 +15,8 @@ const Formulario = () => {
             await onSnapshot(collection(db, "frutas"), (querySnapshot) => {    
               setListaFrutas(querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
             });
-          } catch (error) {
-            console.log(error);
+          } catch (err) {
+            console.log(err);
           }
         };
         obtenerDatos();
@@ -46,6 +46,15 @@ const Formulario = () => {
         }
     }
 
+    const eliminar = async id => {
+        console.log(id)
+        try{
+            await deleteDoc(doc(db,'frutas',id))
+        }catch(error){
+            console.log(error)
+        }
+    }
+
   return (
     <div className='container mt-5'>
         <h1 className='text-center'>CRUD BASICO</h1>
@@ -58,7 +67,7 @@ const Formulario = () => {
                         listaFrutas.map(item =>(
                             <li className='list-group-item' key={item.id}>
                                 <span className='lead'>{item.nombreFruta}-{item.nombreDescripcion}</span>
-                                
+                                <button className='btn btn-danger btn-sm float-end mx-2' onClick={()=>eliminar(item.id)}>Eliminar</button>
                             </li>
                         ))
                     }
